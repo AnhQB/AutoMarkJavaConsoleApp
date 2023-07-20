@@ -23,7 +23,9 @@
             <td>@a.Value.PaperNo</td>
             <td>@a.Value.Mark</td>
             <td>@a.Value.GradeNote</td>
-            <td><a asp-controller="StudentGrade" asp-action="Detail" asp-route-id="@a.Key">Detail</a></td>
+            <td><a asp-controller="StudentGrade" asp-action="Detail"
+                   asp-route-id="@a.Key" asp-route-studentId="@a.Value.StudentId">Detail</a>
+            </td>
         </tr>
     }
 

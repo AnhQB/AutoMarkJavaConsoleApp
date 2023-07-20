@@ -1,0 +1,93 @@
+﻿@using project.DTO;
+<div class="container">
+    <h2>Grade Detail ExamResultId: @ViewBag.examResultId - StudentId: @ViewBag.studentId</h2>
+    @{
+        double? totalMark = 0.0;
+        List<GradeDetailStudent> details = ViewBag.details;
+    }
+    @foreach (var ques in details)
+    {
+        totalMark += ques.QuestionMarkStudent;
+
+        <div class="panel panel-default" style="margin-top: 80px">
+            <div class="panel-heading">
+                <h4 class="panel-title">Question Name: @ques.QuestionName</h4>
+            </div>
+            <div class="panel-body">
+                <p>Question Code: @ques.QuestionId</p>
+                <br />
+
+                @foreach (var tc in ques.TestCases)
+                {
+                    var testresult = (bool)tc.TestCaseResult ? "PASSED" : "FAILED";
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h5 class="panel-title">Test Case Code: @tc.TestCaseId</h5>
+                        </div>
+                        <div class="panel-body">
+                            <p>INPUT</p>
+                            <p>@tc.Input</p>
+                            <p>OUTPUT</p>
+                            <p>@tc.Output</p>
+                            <p>MARK: @tc.MarkTestCase</p>
+                            <p>Test case result:</p>
+                            <p>+Value after "OUTPUT:</p>
+                            <p>&emsp; @tc.OutPutStudent</p>
+                            <br />
+                            <p>=> Test Result: @testresult</p>
+                        </div>
+                    </div>
+                }
+
+                <br />
+                <p>=> QUESTION MARK: @ques.QuestionMarkStudent / @ques.QuestionMark</p>
+            </div>
+        </div>
+    }
+
+    <div class="panel panel-default" style="margin-top: 50px">
+        <div class="panel-body">
+            <p style="font-weight: bold;">*** TOTAL MARK= @totalMark / 10 ***</p>
+        </div>
+    </div>
+</div>
+
+
+@*
+<h1>Grade Detail ExamResultId: @ViewBag.examResultId - StudentId: @ViewBag.studentId</h1>
+@{
+    double? totalMark = 0.0;
+    List<GradeDetailStudent> details = ViewBag.details;
+}
+@foreach (var ques in details)
+{
+    totalMark += ques.QuestionMarkStudent;
+
+    <p>Question Name: @ques.QuestionName :================</p>
+    <p>Question Code: @ques.QuestionId</p>
+    <br />
+
+    @foreach (var tc in ques.TestCases)
+    {
+        var testresult = (bool)tc.TestCaseResult ? "PASSED" : "FAILED";
+
+        <p>Test Case Code: @tc.TestCaseId</p>
+        <p>INPUT</p>
+        <p>@tc.Input</p>
+        <p>OUTPUT</p>
+        <p>@tc.Output</p>
+        <p>MARK: @tc.MarkTestCase</p>
+        <p>Test case result:</p>
+        <p>+Value after "OUTPUT:</p>
+        <p>&emsp; @tc.OutPutStudent</p>
+        <br />
+        <p>=> Test Result: @testresult</p>
+    }
+
+    <br />
+    <p>=> QUESTION MARK: @ques.QuestionMarkStudent / @ques.QuestionMark</p>
+}
+
+
+<p>*** TOTAL MARK= @totalMark / 10 ***</p>*@
