@@ -1,0 +1,31 @@
+﻿@if (TempData["Message"] != null)
+{
+    <p>@TempData["Message"]</p>
+}
+
+<h1>List Grade</h1>
+<table class="table">
+    <tr>
+        <th>ExamResultId</th>
+        <th>StudentId</th>
+        <th>ExamId</th>
+        <th>PaperNo</th>
+        <th>Mark</th>
+        <th>Grade Note</th>
+        <th></th>
+    </tr>
+    @foreach (var a in ViewBag.examResults)
+    {
+        <tr>
+            <td>@a.Key</td>
+            <td>@a.Value.StudentId</td>
+            <td>@a.Value.ExamId</td>
+            <td>@a.Value.PaperNo</td>
+            <td>@a.Value.Mark</td>
+            <td>@a.Value.GradeNote</td>
+            <td><a asp-controller="StudentGrade" asp-action="Detail" asp-route-id="@a.Key">Detail</a></td>
+        </tr>
+    }
+
+
+</table>

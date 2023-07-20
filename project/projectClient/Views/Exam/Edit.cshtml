@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Mvc.Razor
+@using projectClient.DTO
+@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
+@model ExamDTO
+
+
+<h2>Update Book Information</h2>
+<form method="post" asp-action="PostUpdate" asp-controller="Exam">
+    <div class="form-group">
+        <label for="AuthorId">ExamId:</label>
+        <input type="text" class="form-control" id="AuthorId" asp-for="ExamId" value="@Model.ExamId" readonly />
+    </div>
+    <div class="form-group">
+        <label for="Title">PaperNo:</label>
+        <input type="number" min="1" step="1" class="form-control" id="Title" asp-for="PaperNo" value="@Model.PaperNo" />
+    </div>
+    <div class="form-group">
+        <label for="Type">ExamName:</label>
+        <input type="text" class="form-control" id="Type" asp-for="ExamName" value="@Model.ExamName" />
+    </div>
+        
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+</form>
