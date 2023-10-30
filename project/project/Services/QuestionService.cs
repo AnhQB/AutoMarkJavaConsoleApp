@@ -30,6 +30,11 @@ namespace project.Services
             return repository.GetQuestion(id);
         }
 
+        public List<Question> GetQuestion(int examId, int paperNo)
+        {
+            return repository.GetQuestion(examId, paperNo);
+        }
+
         public void Update(QuestionDTO Question)
         {
             repository.Update(Question);

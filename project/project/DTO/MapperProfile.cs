@@ -21,6 +21,7 @@ namespace project.DTO
             CreateMap<QuestionDTO, Question>();
             CreateMap<TestCase, TestCaseDTO>();
             CreateMap<TestCaseDTO, TestCase>();
+            CreateMap<Admin, LoginDTO>();
 
         }
     }

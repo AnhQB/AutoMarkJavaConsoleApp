@@ -271,7 +271,7 @@ namespace project.Repositories
                         List<TestCase> testCases = TestCaseService.GetSingleton()
                             .GetTestCasesByQuestionId(ques.QuestionId);
 
-                        CheckMarkQuestionTest(testCases, scoreExam, pathQues, exams[0].ExamId, paperNo, ques.QuestionId);
+                        CheckMarkQuestionTest(testCases, scoreExam, pathQues, exams[0].ExamId, paperNo, ques);
 
                     }
                 }
@@ -368,7 +368,7 @@ namespace project.Repositories
                     List<TestCase> testCases = TestCaseService.GetSingleton()
                         .GetTestCasesByQuestionId(ques.QuestionId);
                     
-                    CheckMarkQuestion(testCases, scoreExam, pathQues, examId, paperNo, studentFolderName, ques.QuestionId);
+                    CheckMarkQuestion(testCases, scoreExam, pathQues, examId, paperNo, studentFolderName, ques);
 
                 }
             }
@@ -398,7 +398,7 @@ namespace project.Repositories
 
         public void CheckMarkQuestion(List<TestCase> testCases,
             Dictionary<string, Dictionary<string, ScoreExamResultDTO>> scoreExam,
-            string jarFilePath, int examId, string paperNo, string studentId, int questionId)
+            string jarFilePath, int examId, string paperNo, string studentId, Question question)
         {
             //string jarFilePath = Path.Combine(directory, "run", "example.jar"); // đường dẫn tới file .jar
             if (File.Exists(jarFilePath)) // kiểm tra file .jar có tồn tại không
@@ -445,7 +445,7 @@ namespace project.Repositories
 
                     // In kết quả ra màn hình để kiểm tra
                     //Console.WriteLine(output);
-                    CheckOutputTestCase(scoreExam, output, testcase, examId, paperNo, studentId, questionId);
+                    CheckOutputTestCase(scoreExam, output, testcase, examId, paperNo, studentId, question);
 
                     
                 }
@@ -459,7 +459,7 @@ namespace project.Repositories
 
         private void CheckMarkQuestionTest(List<TestCase> testCases,
             Dictionary<string, ScoreExamResultTestDTO> scoreExam, 
-            string pathQues, int examId, string paperNo, int questionId)
+            string pathQues, int examId, string paperNo, Question question)
         {
             if (File.Exists(pathQues)) // kiểm tra file .jar có tồn tại không
             {
@@ -505,7 +505,7 @@ namespace project.Repositories
 
                     // In kết quả ra màn hình để kiểm tra
                     //Console.WriteLine(output);
-                    CheckOutputTestCaseTest(scoreExam, output, testcase, examId, paperNo, questionId);
+                    CheckOutputTestCaseTest(scoreExam, output, testcase, examId, paperNo, question);
 
 
                 }
@@ -518,7 +518,7 @@ namespace project.Repositories
 
         private void CheckOutputTestCaseTest(
             Dictionary<string, ScoreExamResultTestDTO> scoreExam, 
-            string output, TestCase testcase, int examId, string paperNo, int questionId)
+            string output, TestCase testcase, int examId, string paperNo, Question question)
         {
             // check output vs output testcase
             output = output.Split("OUTPUT:").Last().Replace("\r", "").TrimStart('\n').TrimEnd('\n');
@@ -546,10 +546,18 @@ namespace project.Repositories
 
                 GradeDetailTestDTO detail = new GradeDetailTestDTO
                 {
-                    QuestionId = questionId,
+                    QuestionId = question.QuestionId,
                     Output = output,
                     Testresult = testResult,
-                    TestcaseId = testcase.TestcaseId
+                    TestcaseId = testcase.TestcaseId,
+                    Question = new Question
+                    {
+                        QuestionName = question.QuestionName
+                    },
+                    Testcase = new TestCase
+                    {
+                        Mark = testcase.Mark
+                    }
                 };
 
                 List<GradeDetailTestDTO> gradeDetails = new List<GradeDetailTestDTO>
@@ -567,10 +575,18 @@ namespace project.Repositories
                 ScoreExamResultTestDTO result = scoreExam[paperNo];
                 GradeDetailTestDTO detail = new GradeDetailTestDTO
                 {
-                    QuestionId = questionId,
+                    QuestionId = question.QuestionId,
                     Output = output,
                     Testresult = testResult,
-                    TestcaseId = testcase.TestcaseId
+                    TestcaseId = testcase.TestcaseId,
+                    Question = new Question
+                    {
+                        QuestionName = question.QuestionName
+                    },
+                    Testcase = new TestCase
+                    {
+                        Mark = testcase.Mark
+                    }
                 };
                 if (testResult)
                     result.Mark += testcase.Mark;
@@ -580,7 +596,7 @@ namespace project.Repositories
 
         private void CheckOutputTestCase(Dictionary<string, Dictionary<string, ScoreExamResultDTO>> scoreExam,
             string output, TestCase testcase
-            , int examId, string paperNo, string studentId, int questionId)
+            , int examId, string paperNo, string studentId, Question question)
         {
             // check output vs output testcase
             output = output.Split("OUTPUT:").Last().Replace("\r", "").TrimStart('\n').TrimEnd('\n');
@@ -615,10 +631,18 @@ namespace project.Repositories
                 GradeDetail detail = new GradeDetail
                 {
                     ExamresultId = examResultExist == null ? examAdd.ExamresultId : examResultExist.ExamresultId,
-                    QuestionId = questionId,
+                    QuestionId = question.QuestionId,
                     Output = output,
                     Testresult = testResult,
-                    TestcaseId = testcase.TestcaseId
+                    TestcaseId = testcase.TestcaseId,
+                    Testcase = new TestCase
+                    {
+                        Mark = testcase.Mark
+                    },
+                    Question = new Question
+                    {
+                        QuestionName = question.QuestionName
+                    }
                 };
 
                 List<GradeDetail> gradeDetails = new List<GradeDetail>
@@ -642,10 +666,18 @@ namespace project.Repositories
                 GradeDetail detail = new GradeDetail
                 {
                     ExamresultId = result.ExamresultId,
-                    QuestionId = questionId,
+                    QuestionId = question.QuestionId,
                     Output = output,
                     Testresult = testResult,
-                    TestcaseId = testcase.TestcaseId
+                    TestcaseId = testcase.TestcaseId,
+                    Testcase = new TestCase
+                    {
+                        Mark = testcase.Mark
+                    },
+                    Question = new Question
+                    {
+                        QuestionName = question.QuestionName
+                    }
                 };
                 if (testResult)
                     result.Mark  += testcase.Mark;
@@ -740,6 +772,7 @@ namespace project.Repositories
                             PaperNo = er.PaperNo,
                             Mark = er.Mark,
                             QuestionName = q.QuestionName,
+                            QuestionId = q.QuestionId,
                             TestCaseId = gd.TestcaseId,
                             TestResult = gd.Testresult,
                             MarkTestCase = t.Mark
@@ -762,6 +795,7 @@ namespace project.Repositories
 
                     listGradeNote.Add(new GradeNote
                     {
+                        QuestionId = item.QuestionId,
                         QuestionName = item.QuestionName,
                         Mark = (bool)item.TestResult ? item.MarkTestCase : 0
                     });
@@ -770,11 +804,12 @@ namespace project.Repositories
                 }
                 else
                 {
-                    var index = ExistQuestionInGradeNote(listGradeNote, item.QuestionName);
+                    var index = ExistQuestionInGradeNote(listGradeNote, item.QuestionId);
                     if (index == -1)
                     {
                         listGradeNote.Add(new GradeNote
                         {
+                            QuestionId = item.QuestionId,
                             QuestionName = item.QuestionName,
                             Mark = (bool)item.TestResult ? item.MarkTestCase : 0
                         });
@@ -794,16 +829,24 @@ namespace project.Repositories
             return result;
         }
 
-        public int ExistQuestionInGradeNote(List<GradeNote> list, string quesName)
+        public int ExistQuestionInGradeNote(List<GradeNote> list, int quesId)
         {
-            foreach(var item in list)
+            if(list.Count > 0) 
             {
-                if (item.QuestionName.Equals(quesName))
+                foreach (var item in list)
                 {
-                    return list.IndexOf(item);
+                    if (item.QuestionId == quesId)
+                    {
+                        return list.IndexOf(item);
+                    }
                 }
+                return -1;
             }
-            return -1;
+            else
+            {
+                return -1;
+            }
+            
         }
 
         public List<GradeDetailStudent> GetGradeDetail(int examresultId)

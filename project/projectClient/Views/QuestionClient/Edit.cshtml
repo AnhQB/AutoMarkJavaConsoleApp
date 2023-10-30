@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Mvc.Razor
+@using project.Models;
+@using projectClient.DTO
+@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    List<ExamDTO> exams = ViewBag.exams;
+            project.Models.Question question = ViewBag.question;
+}
+
+<h2>Update Question Information</h2>
+<form method="post" asp-action="PostUpdate" asp-controller="QuestionClient">
+    <div class="form-group">
+        <label for="Title">QuestionId:</label>
+        <input type="text" class="form-control" id="Title" name="questionId" value="@question.QuestionId" readonly/>
+    </div>
+    <div class="form-group">
+        <label for="Title">QuestionName:</label>
+        <input type="text" class="form-control" id="Title" name="questionName" value="@question.QuestionName" />
+    </div>
+    <div class="form-group">
+        <label for="Type">Mark:</label>
+        <input type="number" min="1" class="form-control" id="Type" name="mark" value="@question.Mark" />
+    </div>
+    <div class="form-group">
+        <label for="examId">Select an exam:</label>
+        <select name="exam" id="examId" class="form-control">
+            @foreach (var a in exams)
+            {
+                @if (question.ExamId == @a.ExamId && question.PaperNo == a.PaperNo)
+                {
+                    <option value="@a.ExamId _ @a.PaperNo" selected>@a.ExamName _PaperNo: @a.PaperNo</option>
+                }
+                else
+                {
+                    <option value="@a.ExamId _ @a.PaperNo">@a.ExamName _PaperNo: @a.PaperNo</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+</form>

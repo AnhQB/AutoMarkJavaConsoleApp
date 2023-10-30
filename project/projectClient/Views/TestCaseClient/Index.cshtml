@@ -1,0 +1,44 @@
+﻿@if (TempData["Message"] != null)
+{
+    <p>@TempData["Message"]</p>
+}
+<div>
+    <div class="form-group">
+        <label for="examId">Select an exam:</label>
+        <select name="exam" id="examId" class="form-control">
+            @foreach (var a in ViewBag.exams)
+            {
+                <option value="@a.ExamId">@a.ExamName</option>
+            }
+        </select>
+    </div>
+
+</div>
+<h1>List Exam</h1>
+<a asp-controller="TestCaseClient" asp-action="Add">Add New Test Case</a>
+<table class="table">
+    <tr>
+        <th>TestcaseId</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Mark</th>
+        <th>QuestionId</th>
+        <th></th>
+    </tr>
+    @foreach (var a in ViewBag.testcases)
+    {
+        <tr>
+            <td>@a.TestcaseId</td>
+            <td>@a.Input</td>
+            <td>@a.Output</td>
+            <td>@a.Mark</td>
+            <td>@a.QuestionId</td>
+            <td>
+                <a asp-controller="TestCaseClient" asp-action="Edit" asp-route-id="@a.TestcaseId" >Edit</a>
+                <a asp-controller="TestCaseClient" asp-action="Delete" asp-route-id="@a.TestcaseId">Delete</a>
+            </td>
+        </tr>
+    }
+
+
+</table>

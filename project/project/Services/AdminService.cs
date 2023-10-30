@@ -30,6 +30,11 @@ namespace project.Services
             return repository.GetAdmin(id);
         }
 
+        public Admin GetAdmin(LoginDTO login)
+        {
+            return repository.GetAdmin(login);
+        }
+
         public void Update(Admin admin)
         {
             repository.Update(admin);

@@ -1,0 +1,211 @@
+﻿@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
+@using projectClient.DTO;
+@model ScoreExamResultDTO
+@if (@TempData["Message"] != null)
+{
+    <p>@TempData["Message"]</p>
+}
+<h2>Mark The Exam</h2>
+<div class="form-group w-50" >
+    <label for="fileInput">Select a .zip file to upload:</label>
+    <input type="file" class="form-control" id="fileInput" accept=".zip" />
+</div>
+
+
+<div class="form-group">
+    <label for="examId">Select an exam:</label>
+    <select name="exam" id="examId" class="form-control">
+        @foreach (var a in ViewBag.exams)
+        {
+            <option value="@a.ExamId">@a.ExamName</option>
+        }
+    </select>
+</div>
+<div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" name="type" id="typeTest">
+    <label class="form-check-label" for="typeTest">Just Test</label>
+</div>
+
+<div class="form-group">
+    <input type="submit" value="Submit" class="btn btn-success" id="submitBtn">
+</div>
+
+<div>
+    <button id="export">Export</button>
+    <table id="added-articles" class="table" >
+        <tr>
+            <th>PaperNo</th>
+            <th>StudentId</th>
+            <th>Mark</th>
+            <th>Grade Note</th>
+        </tr>
+    </table>
+
+    <table id="added-articlesB" class="table" >
+        <tr>
+            <th>PaperNo</th>
+            <th>Mark</th>
+            <th>Grade Note</th>
+        </tr>
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var dataExport;
+            $('#export').hide();
+            $('#added-articles').hide();
+            $('#added-articlesB').hide();
+            $(document).on("click", '#submitBtn', function (event) {
+                event.preventDefault();
+                //console.log(1);
+                var fileInput = document.getElementById("fileInput");
+                var examId = document.getElementById("examId").value;
+                var typeTest = $('#typeTest').prop('checked') ? 1 : 0;
+                console.log(typeTest);
+                var formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                formData.append("examId", examId);
+                formData.append("type", typeTest);
+
+
+                $.ajax({
+                    url: "http://localhost:5000/api/Grade",
+                    method: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        dataExport = data;
+                        //console.log(data);
+                        if (typeTest == 0){
+                            // grade
+                            $('#export').show();
+                            $("#added-articles").show();
+                            $("#added-articlesB").hide();
+                            $.each(data, function (index, paperNo) {
+                                $.each(paperNo, function (index, student) {
+                                    var row = $('<tr>');
+                                    row.append($('<td>').text(student.paperNo));
+                                    row.append($('<td>').text(student.studentId));
+                                    row.append($('<td>').text(student.mark));
+                                    row.append($('<td>').text(student.gradeNote));
+                                    $('#added-articles').append(row);
+                                });
+                            });
+                        }else{
+                            // test TC
+                            $('#export').show();
+                            $("#added-articles").hide();
+                            $("#added-articlesB").show();
+                            $.each(data, function (index, paperNo) {
+                                var row = $('<tr>');
+                                row.append($('<td>').text(paperNo.paperNo));
+                                row.append($('<td>').text(paperNo.mark));
+                                row.append($('<td>').text(paperNo.gradeNote));
+                                $('#added-articlesB').append(row);
+                            });
+
+                        }
+                        // handle response data
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        // handle error
+                    }
+                });
+
+            });
+            
+            /*
+            $.ajax({
+                url: "http://localhost:5000/api/Exam/OData?$filter=paperNo eq 1",
+                method: "GET",
+                success: function (data) {
+                    console.log(data);
+                    // handle response data
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    // handle error
+                }
+            });
+            */
+
+            $(document).on("click", '#export', function (event) {
+                //console.log(dataExport);
+                var formData = new FormData();
+                var dataList = [];
+                $.each(dataExport, function (index, paperNo) {
+                    $.each(paperNo, function (index, student) {
+                        let examresult =
+                        {
+                            examId: student.examId,
+                            gradeNote: student.gradeNote,
+                            mark: student.mark,
+                            paperNo: student.paperNo,
+                            studentId: student.studentId
+                        };
+                        dataList.push(examresult);
+                    });
+                });
+                console.log(dataList);
+                formData.append("exportData", JSON.stringify(dataList));
+                /*
+                $.ajax({
+                    url: "http://localhost:5000/api/Grade/Export",
+                    method: "POST",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(dataList),
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function (data) {
+                        var a = document.createElement('a');
+                        var url = window.URL.createObjectURL(data);
+                        a.href = url;
+                        a.download = 'file_name.xlsx';
+                        document.body.append(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        // handle error
+                    }
+                });
+                */
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:5000/api/Grade/Export', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.responseType = 'blob';
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var now = new Date();
+                        var year = now.getFullYear().toString().substr(-2);
+                        var month = ('0' + (now.getMonth() + 1)).slice(-2);
+                        var day = ('0' + now.getDate()).slice(-2);
+                        var hours = ('0' + now.getHours()).slice(-2);
+                        var minutes = ('0' + now.getMinutes()).slice(-2);
+                        var seconds = ('0' + now.getSeconds()).slice(-2);
+
+                        var result = year + month + day + hours + minutes + seconds;
+
+                        var a = document.createElement('a');
+                        var url = window.URL.createObjectURL(xhr.response);
+                        a.href = url;
+                        a.download = 'grade_' + result + '.xlsx';
+                        document.body.append(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    }
+                };
+
+                xhr.send(JSON.stringify(dataList));
+            });
+        });
+    </script>
+}

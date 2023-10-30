@@ -1,0 +1,111 @@
+﻿@using projectClient.DTO;
+@using project.Models;
+@{
+    List<ExamDTO> exams = ViewBag.exams;
+    List<Question> questions = ViewBag.questions;
+    List<project.Models.TestCase> testCases = ViewBag.testcases;
+
+    string selectedExam = ViewBag.selectedExam;
+    int selectedQues = ViewBag.selectedQues;
+}
+
+<h2>Update Question Information</h2>
+<form method="post" asp-action="PostAdd" asp-controller="TestCaseClient">
+    
+    @if(exams != null)
+    {
+        <div class="form-group">
+            <label for="examId">Select an exam-paper:</label>
+            <select name="exam" id="examId" class="form-control">
+                @foreach (var a in exams)
+                {
+                    var temp = a.ExamId + " _ " + a.PaperNo;
+                    @if(temp.Equals(selectedExam)){
+                        <option value="@a.ExamId _ @a.PaperNo" selected>@a.ExamName _PaperNo: @a.PaperNo</option>
+                    }else{
+                        <option value="@a.ExamId _ @a.PaperNo">@a.ExamName _PaperNo: @a.PaperNo</option>
+                    }
+                    
+                }
+            </select>
+        </div>
+    }
+    @if(questions != null)
+    {
+        <div class="form-group">
+            <label for="quesId">Select an question:</label>
+            <select name="quesId" id="quesId" class="form-control">
+                @foreach (var b in questions)
+                {
+                    @if (b.QuestionId == selectedQues)
+                    {
+                        <option value="@b.QuestionId" selected>@b.QuestionName</option>
+                    }else{
+                        <option value="@b.QuestionId">@b.QuestionName</option>
+                    }
+                }
+            </select>
+        </div>
+    }
+    <div class="form-group">
+        <label for="Title">Input:</label>
+        <input type="text" class="form-control" id="Title" name="input" />
+    </div>
+    <div class="form-group">
+        <label for="Title">Output:</label>
+        <input type="text" class="form-control" id="Title" name="output" />
+    </div>
+    <div class="form-group">
+        <label for="Type">Mark:</label>
+        <input type="number" min="1" class="form-control" id="Type" name="mark" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+    <div>
+        @if(testCases != null)
+        {
+            <table class="table">
+                <tr>
+                    <th>TestcaseId</th>
+                    <th>Input</th>
+                    <th>Output</th>
+                    <th>Mark</th>
+                    <th>QuestionId</th>
+                </tr>
+                @foreach (var c in testCases)
+                {
+                    <tr>
+                        <td>@c.TestcaseId</td>
+                        <td>@c.Input</td>
+                        <td>@c.Output</td>
+                        <td>@c.Mark</td>
+                        <td>@c.QuestionId</td>
+                    </tr>
+                }
+            </table>
+        }
+
+    </div>
+</form>
+@section Scripts{
+    <script>
+        $(document).on('change', '#examId', function () {
+            var examPaper = $(this).val();
+            console.log("select exam paper ", examPaper);
+
+            var url = "/TestCaseClient/Add?param=" + encodeURIComponent(examPaper + "&");
+            window.location.href = url;
+        });
+
+        $(document).on('change', '#quesId', function () {
+            var ques = $(this).val();
+            var examPaper = $('#examId').find(":selected").val();
+            console.log("select exam paper ", examPaper, ques);
+
+            var url = "/TestCaseClient/Add?param=" + encodeURIComponent(examPaper + "&" + ques);
+            window.location.href = url;
+        });
+    </script>
+}

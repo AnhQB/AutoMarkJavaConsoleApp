@@ -47,6 +47,25 @@ namespace project.Controllers
             }
         }
 
+        [HttpGet("{examId}/{paperNo}")]
+        public IActionResult Get(int examId, int paperNo)
+        {
+            try
+            {
+                var data = QuestionService.GetSingleton().GetQuestion(examId, paperNo);
+                if (data == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost]
         public IActionResult Add(QuestionDTO question)
         {

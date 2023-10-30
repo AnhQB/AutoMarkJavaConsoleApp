@@ -87,5 +87,92 @@ namespace project.Services
         {
             return repository.GetGradeDetail(examresultId);
         }
+
+        public Dictionary<string, Dictionary<string, ExamResultStudent>> ReformatGrade(Dictionary<string, Dictionary<string, ScoreExamResultDTO>> result)
+        {
+            Dictionary<string, Dictionary<string, ExamResultStudent>> listGrade =
+                new Dictionary<string, Dictionary<string, ExamResultStudent>>();
+            
+            foreach(var paperNo in result.Keys)
+            {
+                listGrade.Add(paperNo, new Dictionary<string, ExamResultStudent>());
+                foreach(var studentId in result[paperNo].Keys)
+                {
+                    ScoreExamResultDTO temp = result[paperNo][studentId];
+                    List<GradeNote> listGradeNote = new List<GradeNote>();
+                    foreach(var gd in temp.GradeDetails)
+                    {
+                        int index = repository.ExistQuestionInGradeNote(listGradeNote, gd.QuestionId);
+                        if (index == -1)
+                        {
+                            listGradeNote.Add(new GradeNote
+                            {
+                                QuestionId = gd.QuestionId,
+                                QuestionName = gd.Question.QuestionName,
+                                Mark = (bool)gd.Testresult ? gd.Testcase.Mark : 0
+                            });
+                        }
+                        else
+                        {
+                            listGradeNote[index].Mark = (bool)gd.Testresult
+                                ? listGradeNote[index].Mark + gd.Testcase.Mark : listGradeNote[index].Mark;
+                        }
+                    }
+
+
+                    listGrade[paperNo].Add(studentId, new ExamResultStudent
+                    {
+                        StudentId = temp.StudentId,
+                        ExamId = temp.ExamId,
+                        PaperNo = temp.PaperNo,
+                        Mark =  temp.Mark,
+                        GradeNote = String.Join("; ", listGradeNote.Select(x => x.ToString()))
+                    });
+                }
+            }
+
+            return listGrade;
+        }
+
+        public Dictionary<string, ExamResultStudent> ReformatGradeTest(Dictionary<string, ScoreExamResultTestDTO> resultTest)
+        {
+            Dictionary<string, ExamResultStudent> listGrade =
+                new Dictionary<string, ExamResultStudent>();
+
+            foreach(var paperNo in resultTest.Keys)
+            {
+                listGrade.Add(paperNo, new ExamResultStudent());
+                ScoreExamResultTestDTO temp = resultTest[paperNo];
+                List<GradeNote> listGradeNote = new List<GradeNote>();
+                foreach (var gd in temp.GradeDetails)
+                {
+                    int index = repository.ExistQuestionInGradeNote(listGradeNote, gd.QuestionId);
+                    if (index == -1)
+                    {
+                        listGradeNote.Add(new GradeNote
+                        {
+                            QuestionId = gd.QuestionId,
+                            QuestionName = gd.Question.QuestionName,
+                            Mark = (bool)gd.Testresult ? gd.Testcase.Mark : 0
+                        });
+                    }
+                    else
+                    {
+                        listGradeNote[index].Mark = (bool)gd.Testresult
+                            ? listGradeNote[index].Mark + gd.Testcase.Mark : listGradeNote[index].Mark;
+                    }
+                }
+
+                listGrade[paperNo] = new ExamResultStudent
+                {
+                    ExamId = temp.ExamId,
+                    PaperNo = temp.PaperNo,
+                    Mark = temp.Mark,
+                    GradeNote = String.Join("; ", listGradeNote.Select(x => x.ToString()))
+                };
+            }
+            return listGrade;
+        }
+        
     }
 }

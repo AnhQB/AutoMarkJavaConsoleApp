@@ -25,6 +25,11 @@ namespace project.Services
             return repository.GetTestCases();
         }
 
+        public List<TestCase> GetTestCases(int quesId)
+        {
+            return repository.GetTestCases(quesId);
+        }
+
         public List<TestCase> GetTestCasesByQuestionId(int quesId)
         {
             return repository.GetTestCasesByQuestionId(quesId);

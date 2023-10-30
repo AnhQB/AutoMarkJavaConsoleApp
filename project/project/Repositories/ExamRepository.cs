@@ -130,18 +130,18 @@ namespace project.Repositories
         public void Update(ExamDTO exam)
         {
             
-            var auData = context.Exams.FirstOrDefault(item => item.ExamId == exam.ExamId);
+            /*var auData = context.Exams.FirstOrDefault(item => item.ExamId == exam.ExamId 
+                && item.PaperNo == exam.PaperNo);
             if (auData == null)
-                throw new Exception("Not found Exam to update");
+                throw new Exception("Not found Exam to update");*/
             var auData1 = context.Exams.FirstOrDefault(item => item.ExamId == exam.ExamId 
                 && item.PaperNo == exam.PaperNo);
-            if(auData1 != null)
+            if(auData1 == null)
             {
-                throw new Exception("ExamId and Paper No already Exist");
+                throw new Exception("Not found Exam to update");
             }
 
-            auData.PaperNo = exam.PaperNo;
-            auData.ExamName = exam.ExamName;
+            auData1.ExamName = exam.ExamName;
 
             context.SaveChanges();
             

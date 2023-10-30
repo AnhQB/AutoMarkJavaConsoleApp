@@ -31,6 +31,14 @@ namespace project.Repositories
             
         }
 
+        public Admin GetAdmin(LoginDTO login)
+        {
+
+            return context.Admins.FirstOrDefault(m => m.Username.Equals(login.Username) 
+                && m.Password.Equals(login.Password));
+
+        }
+
         public void Add(Admin admin)
         {
             

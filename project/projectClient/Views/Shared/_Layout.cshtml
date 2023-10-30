@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - projectClient</title>
+    <title>@ViewData["Title"] - Auto Scoring PE PRO192</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/projectClient.styles.css" asp-append-version="true" />
@@ -12,20 +12,21 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">projectClient</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Auto Scoring PE PRO192</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                <div class="ms-auto">
+                    @if (Context.Request.HttpContext.Session.GetString("UserName") != null)
+                    {
+                        <p>Welcome @Context.Request.HttpContext.Session.GetString("UserName")</p>
+                        <a class="nav-link" asp-controller="AuthClient" asp-action="Logout">Logout</a>
+                    }
+                    else
+                    {
+                        <a class="nav-link" asp-controller="AuthClient" asp-action="Login">Login</a>
+                    }
                 </div>
             </div>
         </nav>
@@ -35,20 +36,16 @@
             <div class="col-md-3 box-shadow mb-3">
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-column justify-content-between">
                     <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
-                    <a class="nav-link" asp-controller="Grade" asp-action="Index">Mark Exam</a>
-                    <a class="nav-link" asp-controller="Exam" asp-action="Index">Exams</a>
-                    <a class="nav-link" asp-controller="Question" asp-action="Index">Questions</a>
-                    <a class="nav-link" asp-controller="TestCase" asp-action="Index">TestCases</a>
-                    <a class="nav-link" asp-controller="StudentGrade" asp-action="Index">Student Grades</a>
                     
-                    @*@if (Context.Request.HttpContext.Session.GetString("Role") != null
-                    && Context.Request.HttpContext.Session.GetString("Role").Equals("1"))
+                    @if (Context.Request.HttpContext.Session.GetString("UserName") != null)
                     {
-                        <a class="nav-link" asp-controller="Publisher" asp-action="Index">Publishers</a>
-                        <a class="nav-link" asp-controller="Book" asp-action="Index">Books</a>
-                        <a class="nav-link" asp-controller="Author" asp-action="Index">Authors</a>
+                        <a class="nav-link" asp-controller="GradeClient" asp-action="Index">Scoring Exam</a>
+                        <a class="nav-link" asp-controller="ExamClient" asp-action="Index">Exams</a>
+                        <a class="nav-link" asp-controller="QuestionClient" asp-action="Index">Questions</a>
+                        <a class="nav-link" asp-controller="TestCaseClient" asp-action="Index">TestCases</a>
+                        <a class="nav-link" asp-controller="StudentGrade" asp-action="Index">Student Grades</a>
                     }
-*@
+
 
                 </div>
             </div>

@@ -22,7 +22,8 @@ namespace project.Repositories
             Dictionary<string, Dictionary<string, List<Question>>> list = new Dictionary<string, Dictionary<string, List<Question>>>();
             foreach (var i in a)
             {
-                if (!list.ContainsKey(i.ExamId.ToString() == null ? "*" : i.ExamId.ToString()))
+                
+                if (!list.ContainsKey(i.ExamId.ToString() == null ? "*" + i.QuestionId : i.ExamId.ToString()))
                 {
                     Dictionary<string, List<Question>> temp = new Dictionary<string, List<Question>>();
                     temp[i.PaperNo.ToString()] = new List<Question>
@@ -60,6 +61,13 @@ namespace project.Repositories
             
             return context.Questions.FirstOrDefault(m => m.QuestionId == id);
             
+        }
+
+        public List<Question> GetQuestion(int examId, int paperNo)
+        {
+
+            return context.Questions.Where(m => m.ExamId == examId && m.PaperNo == paperNo).ToList();
+
         }
 
         public void Add(QuestionDTO Question)

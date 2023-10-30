@@ -47,6 +47,25 @@ namespace project.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetByQuestionId(int id)
+        {
+            try
+            {
+                var data = TestCaseService.GetSingleton().GetTestCases(id);
+                if (data == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost]
         public IActionResult Add(TestCaseDTO TestCase)
         {

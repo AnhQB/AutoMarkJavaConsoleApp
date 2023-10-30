@@ -8,6 +8,12 @@ namespace projectClient
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -22,8 +28,28 @@ namespace projectClient
 
             app.UseAuthorization();
 
+            app.UseSession();
+
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Path.Value;
+                if (!path.StartsWith("/AuthClient/Login") && 
+                    !context.Session.TryGetValue("UserName", out byte[] value) &&
+                    !path.StartsWith("/Home") &&
+                    !path.StartsWith("/AuthClient/PostLogin")
+                    )
+                {
+                    context.Response.Redirect("/AuthClient/Login");
+                }
+                else
+                {
+                    await next.Invoke();
+                }
+            });
+
+
             app.MapControllerRoute(
-                name: "default",
+                name: "/Home",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();

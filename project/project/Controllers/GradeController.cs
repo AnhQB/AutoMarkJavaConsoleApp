@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using project.DTO;
 using project.Services;
+using static System.Net.Mime.MediaTypeNames;
+using System.Data;
+using Microsoft.AspNetCore.Razor.Hosting;
 
 namespace project.Controllers
 {
@@ -19,12 +22,13 @@ namespace project.Controllers
                 {
                     Dictionary<string, Dictionary<string, ScoreExamResultDTO>> result
                         = await ExamResultService.GetSingleton().AutoScoringAsync(file, examId);
-                    return Ok(result);
+
+                    return Ok(ExamResultService.GetSingleton().ReformatGrade(result));
                 }
                 else {
                     Dictionary<string, ScoreExamResultTestDTO> resultTest = 
                         await ExamResultService.GetSingleton().AutoScoringAsyncTest(file, examId);
-                    return Ok(resultTest);
+                    return Ok(ExamResultService.GetSingleton().ReformatGradeTest(resultTest));
                 }
             }
             catch(Exception e)
@@ -69,6 +73,31 @@ namespace project.Controllers
             {
                 return BadRequest();
             }
+        }
+        [HttpPost("Export")]
+        public IActionResult ExportToExcel([FromBody] List<ExamResultStudent> exportData)
+        {
+            /*// Tạo một đối tượng DataTable với hai cột "ID" và "Name"
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("PaperNo", typeof(int));
+            dataTable.Columns.Add("StudentId", typeof(int));
+            dataTable.Columns.Add("Mark", typeof(double));
+            dataTable.Columns.Add("GradeNote", typeof(string));
+
+            // Thêm hai hàng dữ liệu vào bảng
+            foreach(var item in exportData)
+            {
+                dataTable.Rows.Add(item.PaperNo, item.StudentId, item.Mark, item.GradeNote);
+            }*/
+
+            byte[] reportBytes;
+            using (var package = ExamService.GetSingleton().getApplicantsStatistics(exportData))
+            {
+                reportBytes = package.GetAsByteArray();
+            }
+            return File(reportBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Grade_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}");
+
+            //return new EmptyResult();
         }
     }
 }

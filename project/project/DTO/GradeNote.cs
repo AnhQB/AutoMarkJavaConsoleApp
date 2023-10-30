@@ -2,6 +2,7 @@
 {
     public class GradeNote
     {
+        public int QuestionId { get; set; }
         public string? QuestionName { get; set; }
 
         public double? Mark { get; set; }

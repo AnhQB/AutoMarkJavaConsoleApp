@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Mvc.Razor
+@using projectClient.DTO
+@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
+@model ExamDTO
+
+<h1>Add new Exam</h1>
+<form method="post" asp-action="PostAdd" asp-controller="ExamClient">
+    <div class="form-group">
+        <label for="Title">ExamName:</label>
+        <input type="text" class="form-control" id="Title" asp-for="ExamName" />
+    </div>
+    <div class="form-group">
+        <label for="PaperNo">PaperNo:</label>
+        <input type="number" min="1" step="1" class="form-control" id="Type" asp-for="PaperNo" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+</form>

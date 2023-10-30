@@ -22,6 +22,13 @@ namespace project.Repositories
             
         }
 
+        public List<TestCase> GetTestCases(int quesId)
+        {
+
+            return context.TestCases.Where(t => t.QuestionId == quesId).ToList();
+
+        }
+
         public List<TestCase> GetTestCasesByQuestionId(int quesId)
         {
             return context.TestCases.Where(t => t.QuestionId == quesId).ToList();
